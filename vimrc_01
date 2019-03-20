@@ -1,0 +1,140 @@
+source $VIMRUNTIME/vimrc_example.vim
+source $VIMRUNTIME/mswin.vim
+
+set diffexpr=MyDiff()
+function MyDiff()
+  let opt = '-a --binary '
+  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+  let arg1 = v:fname_in
+  if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+  let arg1 = substitute(arg1, '!', '\!', 'g')
+  let arg2 = v:fname_new
+  if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+  let arg2 = substitute(arg2, '!', '\!', 'g')
+  let arg3 = v:fname_out
+  if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+  let arg3 = substitute(arg3, '!', '\!', 'g')
+  if $VIMRUNTIME =~ ' '
+    if &sh =~ '\<cmd'
+      if empty(&shellxquote)
+        let l:shxq_sav = ''
+        set shellxquote&
+      endif
+      let cmd = '"' . $VIMRUNTIME . '\diff"'
+    else
+      let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+    endif
+  else
+    let cmd = $VIMRUNTIME . '\diff'
+  endif
+  let cmd = substitute(cmd, '!', '\!', 'g')
+  silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
+  if exists('l:shxq_sav')
+    let &shellxquote=l:shxq_sav
+  endif
+endfunction
+
+
+set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
+set termencoding=utf-8
+set encoding=utf-8
+set nobackup
+
+" 鼠标
+set mouse=a
+set selection=exclusive
+set selectmode=mouse,key
+set paste			" 设置粘贴模式
+let mapleader='\'
+
+" 显示空格和tab键
+set listchars=tab:>-,trail:-
+
+" 显示状态栏和光标当前位置
+set laststatus=2	" 总是显示状态栏
+set ruler			" 显示光标当前位置
+set nu 				" 显示行号
+set number
+set showcmd 		" 命令行显示输入的命令
+set showmode 		" 命令行显示vim当前模式
+set scrolloff=7     " 在上下移动光标时，光标的上方或下方至少会保留显示的行数
+
+syntax enable
+syntax   on           "确定vim打开语法高亮
+filetype on           "打开文件类型检测
+filetype plugin on    "为特定的文件类型允许插件文件的载入
+filetype indent on    "为特定的文件类型载入缩进文件
+
+set showmatch		" 括号匹配
+set linebreak 		" 整词换行
+set autoindent 		" 设置自动对齐
+set tabstop=4 		" 设置制表符(tab键)的宽度
+set softtabstop=4 	" 设置软制表符的宽度
+set shiftwidth=4 	" (自动) 缩进使用的4个空格
+set ignorecase		
+"--find setting--
+set incsearch 		" 输入字符串就显示匹配点
+set hlsearch
+set cursorline		" 突出显示当前行
+
+" 字体样式
+"set guifont=Consolas:h10
+" set guifont=SF\ Mono:h10
+set guifont=Microsoft_YaHei_Mono:h10
+set background=dark
+colorscheme solarized
+
+" 分屏窗口移动, Smart way to move between windows
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
+map <F5> :ls<cr>:e
+
+let g:neocomplete#enable_at_startup = 1
+
+"nerdtree
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+let NERDTreeShowLineNumbers=1
+let NERDTreeAutoCenter=1
+let NERDTreeShowHidden=1
+let NERDTreeIgnore=['\.pyc','\~$','\.swp','\.git']
+let g:NERDSpaceDelims = 1
+let g:NERDDefaultAlign = 'right'
+let NERDTreeWinPos=1  			"右边
+let g:NERDCustomDelimiters = { 'javascript': { 'left': '//', 'leftAlt': '/**', 'rightAlt': '*/' },'less': { 'left': '/**', 'right': '*/' }}
+
+map <F3> :NERDTreeToggle<CR>
+imap <F3> <ESC> :NERDTreeToggle<CR>
+
+autocmd GUIEnter * simalt ~x     	"默认最大化窗口
+
+" Specify a directory for plugins
+" - For Neovim: ~/.local/share/nvim/plugged
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('D:/Program Files/Vim/pulged')
+	Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+	Plug 'junegunn/vim-easy-align'
+	Plug 'https://github.com/Shougo/neocomplete.vim'
+	Plug 'https://github.com/kien/ctrlp.vim'
+	Plug 'godlygeek/tabular'
+	Plug 'plasticboy/vim-markdown'
+	
+	"状态栏
+	Plug 'vim-airline/vim-airline'
+	Plug 'vim-airline/vim-airline-themes'
+	let g:airline_theme='papercolor'
+	
+	Plug 'Raimondi/delimitMate'
+	Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+	
+	"注释
+	Plug 'scrooloose/nerdcommenter'
+
+	Plug'othree/html5.vim'
+	Plug 'hail2u/vim-css3-syntax'
+	Plug 'ap/vim-css-color'
+	Plug'pangloss/vim-javascript'
+
+call plug#end()
